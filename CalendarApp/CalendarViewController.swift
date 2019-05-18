@@ -24,6 +24,11 @@ class CalendarViewController: UIViewController, FSCalendarDataSource, FSCalendar
         self.calendar.dataSource = self
         view.addSubview(calendar)
         
+        formatter.dateFormat = "yyyy/MM/dd"
+        self.todayLabel.text = formatter.string(from: Date())
+        view.addSubview(todayLabel)
+        
+        self.calendar.allowsMultipleSelection = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -32,11 +37,7 @@ class CalendarViewController: UIViewController, FSCalendarDataSource, FSCalendar
     }
     
     private let gregorian: Calendar = Calendar(identifier: .gregorian)
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter
-    }()
+    private lazy var formatter = DateFormatter()
     
     // 祝日判定
     func judgeHoliday(_ date : Date) -> Bool {
@@ -85,4 +86,19 @@ class CalendarViewController: UIViewController, FSCalendarDataSource, FSCalendar
         }
         return nil
     }
+    
+    // 日付を選択されたらその日付をテキストとして表示
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        
+        let year = gregorian.component(.year, from: date)
+        let month = gregorian.component(.month, from: date)
+        let day = gregorian.component(.day, from: date)
+        let y = String(format: "%d", year)
+        let m = String(format: "%02d", month)
+        let d = String(format: "%02d", day)
+        
+        self.selectedLabel.text = "\(y)/\(m)/\(d)"
+        view.addSubview(selectedLabel)
+    }
+    
 }
